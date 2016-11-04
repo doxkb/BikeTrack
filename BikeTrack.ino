@@ -29,7 +29,7 @@ short satellites;
 String speedUnits = "km/h";
 float longitude, latitude, altitude;
 float roll, pitch, heading;
-int sensorUpdateRate = 200;
+int sensorUpdateRate = 100;
 int gpsUpdateRate = 1000;
 
 //Main functions
