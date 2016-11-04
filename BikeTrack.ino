@@ -17,7 +17,9 @@ enum SpeedType{
 //Globals
 SpeedType speedType = kmph;
 float speed;
-float longitude, latitude;
+short satellites;
+String speedUnits = "km/h";
+float longitude, latitude, altitude;
 float roll, pitch, heading;
 
 //Main functions
@@ -37,10 +39,12 @@ void readGps();
 void gpsdump(TinyGPS &gps);
 void gpsdump(TinyGPS &gps);
 void checkSerialForRateChange();
+int milliseconds();
 
 //String functions
 String getFloatString(double number, int digits);
 String getTimeString();
+String getDateString();
 String getDigitsString(int digits);
 
 //Sensor functions

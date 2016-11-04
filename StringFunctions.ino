@@ -40,6 +40,18 @@ String getTimeString()
   return toReturn;
 }
 
+String getDateString()
+{
+  String toReturn =
+    String(year()) +
+    "/" +
+    String(month()) +
+    "/" +
+    String(day());
+  return toReturn;
+
+}
+
 String getDigitsString(int digits)
 {
   String toReturn = "";
