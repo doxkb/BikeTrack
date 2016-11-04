@@ -12,7 +12,6 @@ void readSensors()
   float ax, ay, az;
   float gx, gy, gz;
   float mx, my, mz;
-  float roll, pitch, heading;
 
   if (imu.available()) {
     imu.readMotionSensor(ax, ay, az, gx, gy, gz, mx, my, mz);

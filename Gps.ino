@@ -53,17 +53,29 @@ void readGps()
 
 void gpsdump(TinyGPS &gps)
 {
-  float flat, flon;
   unsigned long age;
 
-  gps.f_get_position(&flat, &flon, &age);
-  Serial.print("Lat/Long(float): "); Serial.print(getFloatString(flat, 5)); Serial.print(", "); Serial.print(getFloatString(flon, 5));
-  Serial.print(" Fix age: "); Serial.print(age); Serial.println("ms.");
+  gps.f_get_position(&latitude, &longitude, &age);
+  Serial.print("Lat/Long(float): "); Serial.print(getFloatString(latitude, 5)); Serial.print(", "); Serial.println(getFloatString(longitude, 5));
+  Serial.print("Alt(m): "); Serial.print(getFloatString(gps.f_altitude(), 2));  Serial.println();
 
   readGpsDateTime(gps);
 
-  Serial.print("Alt(m): "); Serial.print(getFloatString(gps.f_altitude(), 2));  Serial.println();
-  Serial.print("Speed(kmh): "); Serial.print(getFloatString(gps.f_speed_kmph(), 2)); Serial.println();
+  switch (speedType){
+    case mph:
+      speed = gps.f_speed_mph();
+      Serial.print("Speed(mph): ");
+      break;
+    case kmph:
+      speed = gps.f_speed_kmph();
+      Serial.print("Speed(kmh): ");
+      break;
+    case mps:
+      speed = gps.f_speed_mps();
+      Serial.print("Speed(mps): ");
+      break;
+  }
+  Serial.print(getFloatString(speed, 2)); Serial.println();
   Serial.print("Satellites: "); Serial.println(gps.satellites());
 }
 
@@ -122,56 +134,11 @@ void checkSerialForRateChange()
       Serial1.write(msSet, 8);
       theDelay = 2000;
     }
+    else if (incomingByte == 'm')
+      speedType = mph;
+    else if (incomingByte == 'k')
+      speedType = kmph;
+    else if (incomingByte == 's')
+      speedType = mps;
   }
-}
-
-String getFloatString(double number, int digits)
-{
-  String toReturn = "";
-  if (number < 0.0)
-  {
-    toReturn += "-";
-    number = -number;
-  }
-  double rounding = 0.5;
-  for (uint8_t i = 0; i < digits; ++i)
-    rounding /= 10.0;
-
-  number += rounding;
-
-  unsigned long int_part = (unsigned long)number;
-  double remainder = number - (double)int_part;
-  toReturn += String(int_part);
-
-  if (digits > 0)
-    toReturn += ".";
-
-  while (digits-- > 0) {
-    remainder *= 10.0;
-    int toPrint = int(remainder);
-    toReturn += String(toPrint);
-    remainder -= toPrint;
-  }
-
-  return toReturn;
-}
-
-String getTimeString()
-{
-  String toReturn =
-    String(hour()) +
-    ":" +
-    getDigitsString(minute()) +
-    ":" +
-    getDigitsString(second());
-  return toReturn;
-}
-
-String getDigitsString(int digits)
-{
-  String toReturn = "";
-  if (digits < 10)
-    toReturn += "0";
-  toReturn += String(digits);
-  return toReturn;
 }

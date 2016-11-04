@@ -7,6 +7,19 @@
 #include <Wire.h>
 #include <EEPROM.h>
 
+//Enums
+enum SpeedType{
+  kmph, //kilometers per hour
+  mph, //miles per hour
+  mps //meter per second
+};
+
+//Globals
+SpeedType speedType = kmph;
+float speed;
+float longitude, latitude;
+float roll, pitch, heading;
+
 //Main functions
 void setup(void);
 void loop();
@@ -24,6 +37,8 @@ void readGps();
 void gpsdump(TinyGPS &gps);
 void gpsdump(TinyGPS &gps);
 void checkSerialForRateChange();
+
+//String functions
 String getFloatString(double number, int digits);
 String getTimeString();
 String getDigitsString(int digits);

@@ -104,9 +104,9 @@ void greenBtn()
 
 void drawTime()
 {
-  tft.fillRect(3, 3, 100, 21, ILI9341_GREEN);
+  //tft.fillRect(3, 3, 100, 21, ILI9341_GREEN);
   tft.setCursor(6, 6);
-  tft.setTextColor(ILI9341_WHITE);
+  tft.setTextColor(ILI9341_WHITE, ILI9341_GREEN);
   tft.setTextSize(2);
   tft.print(getTimeString());
 }
