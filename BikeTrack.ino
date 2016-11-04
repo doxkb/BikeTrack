@@ -35,6 +35,8 @@ void checkTouch();
 void redBtn();
 void greenBtn();
 void drawTime();
+void drawSensors();
+void drawGps();
 
 //Gps functions
 void initGps();

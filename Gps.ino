@@ -6,13 +6,15 @@ const int offset = -4;  // Eastern Daylight Time (USA)
 time_t prevTimeDisplayUpdate = 0; // when the digital clock was displayed
 int timeChangeMills = 0;
 
+int lastGpsDisplayUpdate = -200;
+
 const byte ms100[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0x64 , 0x00 , 0x01 , 0x00 , 0x01 , 0x00 , 0x7A , 0x12};
 const byte ms200[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0xC8 , 0x00 , 0x01 , 0x00 , 0x01 , 0x00 , 0xDE , 0x6A};
 const byte ms500[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0xF4 , 0x01 , 0x01 , 0x00 , 0x01 , 0x00 , 0x0B , 0x77};
 const byte ms1000[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0xE8 , 0x03 , 0x01 , 0x00 , 0x01 , 0x00 , 0x01 , 0x39};
 const byte ms2000[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0xD0 , 0x07 , 0x01 , 0x00 , 0x01 , 0x00 , 0xED , 0xBD};
 const byte msSet[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x00 , 0x00 , 0x0E , 0x30};
-int theDelay = 500;
+int gpsUpdateRate = 500;
 
 void initGps()
 {
@@ -80,6 +82,13 @@ void gpsdump(TinyGPS &gps)
 
   satellites = gps.satellites();
 
+  int now = millis();
+  if (now - lastGpsDisplayUpdate > gpsUpdateRate)
+  {
+    lastGpsDisplayUpdate = now;
+    drawGps();
+  }
+
   if (printGpsToSerial)
   {
     Serial.print("Lat/Long(float): "); Serial.print(getFloatString(latitude, 5)); Serial.print(", "); Serial.println(getFloatString(longitude, 5));
@@ -122,27 +131,27 @@ void checkSerialForRateChange()
     if (incomingByte == '1') {
       Serial1.write(ms100, 14);
       Serial1.write(msSet, 8);
-      theDelay = 100;
+      gpsUpdateRate = 100;
     }
     else if (incomingByte == '2') {
       Serial1.write(ms200, 14);
       Serial1.write(msSet, 8);
-      theDelay = 200;
+      gpsUpdateRate = 200;
     }
     else if (incomingByte == '3') {
       Serial1.write(ms500, 14);
       Serial1.write(msSet, 8);
-      theDelay = 500;
+      gpsUpdateRate = 500;
     }
     else if (incomingByte == '4') {
       Serial1.write(ms1000, 14);
       Serial1.write(msSet, 8);
-      theDelay = 1000;
+      gpsUpdateRate = 1000;
     }
     else if (incomingByte == '5') {
       Serial1.write(ms2000, 14);
       Serial1.write(msSet, 8);
-      theDelay = 2000;
+      gpsUpdateRate = 2000;
     }
     else if (incomingByte == 'm')
       speedType = mph;
