@@ -41,7 +41,7 @@ void readGps()
   if (newdata)
     gpsdump(gps);
 
-  if (now() != prevTimeMillsUpdate) { //update the display only if the time has changed
+  if (now() != prevTimeMillsUpdate) {
     prevTimeMillsUpdate = now();
     timeChangeMills = millis();
   }
