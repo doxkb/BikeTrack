@@ -49,6 +49,13 @@ void readGps()
     timeChangeMills = millis();
     drawTime();
   }
+
+  int now = millis();
+  if (now - lastGpsDisplayUpdate > gpsUpdateRate)
+  {
+    lastGpsDisplayUpdate = now;
+    drawGps();
+  }
 }
 
 int milliseconds()
@@ -81,13 +88,6 @@ void gpsdump(TinyGPS &gps)
   }
 
   satellites = gps.satellites();
-
-  int now = millis();
-  if (now - lastGpsDisplayUpdate > gpsUpdateRate)
-  {
-    lastGpsDisplayUpdate = now;
-    drawGps();
-  }
 
   if (printGpsToSerial)
   {
@@ -128,36 +128,56 @@ void checkSerialForRateChange()
   if (Serial.available() > 0) {
     char incomingByte;
     incomingByte = Serial.read();
-    if (incomingByte == '1') {
-      Serial1.write(ms100, 14);
-      Serial1.write(msSet, 8);
-      gpsUpdateRate = 100;
-    }
-    else if (incomingByte == '2') {
-      Serial1.write(ms200, 14);
-      Serial1.write(msSet, 8);
-      gpsUpdateRate = 200;
-    }
-    else if (incomingByte == '3') {
-      Serial1.write(ms500, 14);
-      Serial1.write(msSet, 8);
-      gpsUpdateRate = 500;
-    }
-    else if (incomingByte == '4') {
-      Serial1.write(ms1000, 14);
-      Serial1.write(msSet, 8);
-      gpsUpdateRate = 1000;
-    }
-    else if (incomingByte == '5') {
-      Serial1.write(ms2000, 14);
-      Serial1.write(msSet, 8);
-      gpsUpdateRate = 2000;
-    }
+
+    if (incomingByte == '1')
+      updateGpsRefreshRate(100);
+    else if (incomingByte == '2')
+      updateGpsRefreshRate(200);
+    else if (incomingByte == '3')
+      updateGpsRefreshRate(500);
+    else if (incomingByte == '4')
+      updateGpsRefreshRate(1000);
+    else if (incomingByte == '5')
+      updateGpsRefreshRate(2000);
     else if (incomingByte == 'm')
       speedType = mph;
     else if (incomingByte == 'k')
       speedType = kmph;
     else if (incomingByte == 's')
       speedType = mps;
+  }
+}
+
+void updateGpsRefreshRate(int rate)
+{
+  if (rate == 100)
+  {
+    Serial1.write(ms100, 14);
+    Serial1.write(msSet, 8);
+    gpsUpdateRate = 100;
+  }
+  else if (rate == 200)
+  {
+    Serial1.write(ms200, 14);
+    Serial1.write(msSet, 8);
+    gpsUpdateRate = 200;
+  }
+  else if (rate == 500)
+  {
+    Serial1.write(ms500, 14);
+    Serial1.write(msSet, 8);
+    gpsUpdateRate = 500;
+  }
+  else if (rate == 1000)
+  {
+    Serial1.write(ms1000, 14);
+    Serial1.write(msSet, 8);
+    gpsUpdateRate = 1000;
+  }
+  else if (rate == 2000)
+  {
+    Serial1.write(ms2000, 14);
+    Serial1.write(msSet, 8);
+    gpsUpdateRate = 2000;
   }
 }

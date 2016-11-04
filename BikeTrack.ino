@@ -14,11 +14,17 @@ enum SpeedType{
   mps //meter per second
 };
 
+enum Screens{
+  home,
+  settings
+};
+
 //Globals
 #define printSensorsToSerial true
 #define printGpsToSerial true
 #define printTftToSerial true
 SpeedType speedType = kmph;
+Screens currentScreen = home;
 float speed;
 short satellites;
 String speedUnits = "km/h";
@@ -45,6 +51,7 @@ void gpsdump(TinyGPS &gps);
 void gpsdump(TinyGPS &gps);
 void checkSerialForRateChange();
 int milliseconds();
+void updateGpsRefreshRate(int rate);
 
 //String functions
 String getFloatString(double number, int digits);

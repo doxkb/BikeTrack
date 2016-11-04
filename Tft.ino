@@ -60,6 +60,7 @@ void checkTouch()
         if ((y > REDBUTTON_Y) && (y <= (REDBUTTON_Y + REDBUTTON_H))) {
           if (printTftToSerial)
             Serial.println("Red btn hit");
+          updateGpsRefreshRate(1000);
           redBtn();
         }
       }
@@ -70,6 +71,7 @@ void checkTouch()
         if ((y > GREENBUTTON_Y) && (y <= (GREENBUTTON_Y + GREENBUTTON_H))) {
           if (printTftToSerial)
             Serial.println("Green btn hit");
+          updateGpsRefreshRate(100);
           greenBtn();
         }
       }
@@ -130,5 +132,8 @@ void drawGps()
   tft.setCursor(6, 100);
   tft.setTextColor(ILI9341_WHITE, ILI9341_GREEN);
   tft.setTextSize(1);
-  tft.print("Lat: " + getFloatString(latitude, 5) + " Lon: " + getFloatString(longitude, 5) + " Alt: " + getFloatString(altitude, 2));
+  tft.println("Lat: " + getFloatString(latitude, 5));
+  tft.println("Lon: " + getFloatString(longitude, 5));
+  tft.println("Alt: " + getFloatString(altitude, 2));
+  tft.println("Sat: " + String(satellites));
 }
