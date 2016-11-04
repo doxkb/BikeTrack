@@ -1,9 +1,6 @@
 NXPMotionSense imu;
 NXPSensorFusion filter;
 
-int lastSensorDisplayUpdate = -200;
-int sensorUpdateRate = 200;
-
 void initSensors()
 {
   imu.begin();
@@ -32,13 +29,6 @@ void readSensors()
       Serial.print(pitch);
       Serial.print(" ");
       Serial.println(roll);
-    }
-
-    int now = millis();
-    if (now - lastSensorDisplayUpdate > sensorUpdateRate)
-    {
-      lastSensorDisplayUpdate = now;
-      drawSensors();
     }
   }
 }

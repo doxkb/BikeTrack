@@ -10,7 +10,7 @@ XPT2046_Touchscreen ts(STMPE_CS);
 #define TFT_DC  9
 ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC);
 
-boolean RecordOn = false;
+boolean RecordOn = true;
 
 #define FRAME_X 150
 #define FRAME_Y 130
@@ -30,14 +30,15 @@ boolean RecordOn = false;
 void initTft()
 {
   tft.begin();
-  if (!ts.begin() && printTftToSerial)
-      Serial.println("Unable to start touchscreen.");
-  else if (printTftToSerial)
-      Serial.println("Touchscreen started.");
+  if (!ts.begin())
+    Serial.println("Unable to start touchscreen.");
+  else
+    Serial.println("Touchscreen started.");
 
   tft.fillScreen(ILI9341_PURPLE);
   // origin = left,top landscape (USB left upper)
   tft.setRotation(1);
+
   redBtn();
 }
 
@@ -54,8 +55,6 @@ void checkTouch()
     {
       if ((x > REDBUTTON_X) && (x < (REDBUTTON_X + REDBUTTON_W))) {
         if ((y > REDBUTTON_Y) && (y <= (REDBUTTON_Y + REDBUTTON_H))) {
-          if (printTftToSerial)
-            Serial.println("Red btn hit");
           updateGpsRefreshRate(1000);
           redBtn();
         }
@@ -65,8 +64,6 @@ void checkTouch()
     {
       if ((x > GREENBUTTON_X) && (x < (GREENBUTTON_X + GREENBUTTON_W))) {
         if ((y > GREENBUTTON_Y) && (y <= (GREENBUTTON_Y + GREENBUTTON_H))) {
-          if (printTftToSerial)
-            Serial.println("Green btn hit");
           updateGpsRefreshRate(100);
           greenBtn();
         }
@@ -75,33 +72,60 @@ void checkTouch()
   }
 }
 
-void drawFrame()
+int lastSensorDisplayUpdate = -5000;
+int lastGpsDisplayUpdate = -5000;
+time_t prevTimeDisplayUpdate = 0;
+
+void updateDisplay()
 {
-  tft.drawRect(FRAME_X, FRAME_Y, FRAME_W, FRAME_H, ILI9341_BLACK);
+  if (now() != prevTimeDisplayUpdate) { //update the display only if the time has changed
+    prevTimeDisplayUpdate = now();
+    drawTime();
+  }
+
+  if (currentScreen == home)
+  {
+    int nowMills = millis();
+    if (nowMills - lastSensorDisplayUpdate > sensorUpdateRate)
+    {
+      lastSensorDisplayUpdate = nowMills;
+      drawSensors();
+    }
+
+    if (nowMills - lastGpsDisplayUpdate > gpsUpdateRate)
+    {
+      lastGpsDisplayUpdate = nowMills;
+      drawGps();
+    }
+  }
 }
 
 void redBtn()
 {
-  tft.fillRect(REDBUTTON_X, REDBUTTON_Y, REDBUTTON_W, REDBUTTON_H, ILI9341_RED);
-  tft.fillRect(GREENBUTTON_X, GREENBUTTON_Y, GREENBUTTON_W, GREENBUTTON_H, ILI9341_BLUE);
-  drawFrame();
-  tft.setCursor(GREENBUTTON_X + 6 , GREENBUTTON_Y + (GREENBUTTON_H / 2));
-  tft.setTextColor(ILI9341_WHITE);
-  tft.setTextSize(2);
-  tft.println("1000");
-  RecordOn = false;
+  if (RecordOn){
+    tft.fillRect(REDBUTTON_X, REDBUTTON_Y, REDBUTTON_W, REDBUTTON_H, ILI9341_RED);
+    tft.fillRect(GREENBUTTON_X, GREENBUTTON_Y, GREENBUTTON_W, GREENBUTTON_H, ILI9341_BLUE);
+    tft.drawRect(FRAME_X, FRAME_Y, FRAME_W, FRAME_H, ILI9341_BLACK);
+    tft.setCursor(GREENBUTTON_X + 6 , GREENBUTTON_Y + (GREENBUTTON_H / 2));
+    tft.setTextColor(ILI9341_WHITE);
+    tft.setTextSize(2);
+    tft.println("1000");
+    RecordOn = false;
+  }
 }
 
 void greenBtn()
 {
-  tft.fillRect(GREENBUTTON_X, GREENBUTTON_Y, GREENBUTTON_W, GREENBUTTON_H, ILI9341_GREEN);
-  tft.fillRect(REDBUTTON_X, REDBUTTON_Y, REDBUTTON_W, REDBUTTON_H, ILI9341_BLUE);
-  drawFrame();
-  tft.setCursor(REDBUTTON_X + 6 , REDBUTTON_Y + (REDBUTTON_H / 2));
-  tft.setTextColor(ILI9341_WHITE);
-  tft.setTextSize(2);
-  tft.println("100");
-  RecordOn = true;
+  if (!RecordOn){
+    tft.fillRect(GREENBUTTON_X, GREENBUTTON_Y, GREENBUTTON_W, GREENBUTTON_H, ILI9341_GREEN);
+    tft.fillRect(REDBUTTON_X, REDBUTTON_Y, REDBUTTON_W, REDBUTTON_H, ILI9341_BLUE);
+    tft.drawRect(FRAME_X, FRAME_Y, FRAME_W, FRAME_H, ILI9341_BLACK);
+    tft.setCursor(REDBUTTON_X + 6 , REDBUTTON_Y + (REDBUTTON_H / 2));
+    tft.setTextColor(ILI9341_WHITE);
+    tft.setTextSize(2);
+    tft.println("100");
+    RecordOn = true;
+  }
 }
 
 void drawTime()

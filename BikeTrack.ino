@@ -22,7 +22,6 @@ enum Screens{
 //Globals
 #define printSensorsToSerial true
 #define printGpsToSerial true
-#define printTftToSerial true
 SpeedType speedType = kmph;
 Screens currentScreen = home;
 float speed;
@@ -30,6 +29,8 @@ short satellites;
 String speedUnits = "km/h";
 float longitude, latitude, altitude;
 float roll, pitch, heading;
+int sensorUpdateRate = 200;
+int gpsUpdateRate = 1000;
 
 //Main functions
 void setup(void);
@@ -43,6 +44,7 @@ void greenBtn();
 void drawTime();
 void drawSensors();
 void drawGps();
+void updateDisplay();
 
 //Gps functions
 void initGps();
@@ -78,4 +80,5 @@ void loop()
   readSensors();
   readGps();
   checkTouch();
+  updateDisplay();
 }

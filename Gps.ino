@@ -3,10 +3,8 @@
 TinyGPS gps;
 //const int offset = -5;  // Eastern Standard Time (USA)
 const int offset = -4;  // Eastern Daylight Time (USA)
-time_t prevTimeDisplayUpdate = 0; // when the digital clock was displayed
+time_t prevTimeMillsUpdate = 0; // when the digital clock was displayed
 int timeChangeMills = 0;
-
-int lastGpsDisplayUpdate = -200;
 
 const byte ms100[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0x64 , 0x00 , 0x01 , 0x00 , 0x01 , 0x00 , 0x7A , 0x12};
 const byte ms200[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0xC8 , 0x00 , 0x01 , 0x00 , 0x01 , 0x00 , 0xDE , 0x6A};
@@ -14,7 +12,6 @@ const byte ms500[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0xF4 , 0x01 , 0x
 const byte ms1000[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0xE8 , 0x03 , 0x01 , 0x00 , 0x01 , 0x00 , 0x01 , 0x39};
 const byte ms2000[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0xD0 , 0x07 , 0x01 , 0x00 , 0x01 , 0x00 , 0xED , 0xBD};
 const byte msSet[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x00 , 0x00 , 0x0E , 0x30};
-int gpsUpdateRate = 500;
 
 void initGps()
 {
@@ -24,7 +21,7 @@ void initGps()
   }
 
   Serial1.begin(115200);
-  Serial1.write(ms500, 14);
+  Serial1.write(ms1000, 14);
   Serial1.write(msSet, 8);
   timeChangeMills = millis();
 }
@@ -44,17 +41,9 @@ void readGps()
   if (newdata)
     gpsdump(gps);
 
-  if (now() != prevTimeDisplayUpdate) { //update the display only if the time has changed
-    prevTimeDisplayUpdate = now();
+  if (now() != prevTimeMillsUpdate) { //update the display only if the time has changed
+    prevTimeMillsUpdate = now();
     timeChangeMills = millis();
-    drawTime();
-  }
-
-  int now = millis();
-  if (now - lastGpsDisplayUpdate > gpsUpdateRate)
-  {
-    lastGpsDisplayUpdate = now;
-    drawGps();
   }
 }
 
