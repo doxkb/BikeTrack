@@ -76,6 +76,6 @@ void setup(void)
 void loop()
 {
   readSensors();
-  checkTouch();
   readGps();
+  checkTouch();
 }

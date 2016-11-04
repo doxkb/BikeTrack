@@ -30,14 +30,10 @@ boolean RecordOn = false;
 void initTft()
 {
   tft.begin();
-  if (!ts.begin()) {
-    if (printTftToSerial)
+  if (!ts.begin() && printTftToSerial)
       Serial.println("Unable to start touchscreen.");
-  }
-  else {
-    if (printTftToSerial)
+  else if (printTftToSerial)
       Serial.println("Touchscreen started.");
-  }
 
   tft.fillScreen(ILI9341_PURPLE);
   // origin = left,top landscape (USB left upper)
@@ -92,7 +88,7 @@ void redBtn()
   tft.setCursor(GREENBUTTON_X + 6 , GREENBUTTON_Y + (GREENBUTTON_H / 2));
   tft.setTextColor(ILI9341_WHITE);
   tft.setTextSize(2);
-  tft.println("ON");
+  tft.println("1000");
   RecordOn = false;
 }
 
@@ -104,7 +100,7 @@ void greenBtn()
   tft.setCursor(REDBUTTON_X + 6 , REDBUTTON_Y + (REDBUTTON_H / 2));
   tft.setTextColor(ILI9341_WHITE);
   tft.setTextSize(2);
-  tft.println("OFF");
+  tft.println("100");
   RecordOn = true;
 }
 
