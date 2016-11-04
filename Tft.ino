@@ -31,10 +31,12 @@ void initTft()
 {
   tft.begin();
   if (!ts.begin()) {
-    Serial.println("Unable to start touchscreen.");
+    if (printTftToSerial)
+      Serial.println("Unable to start touchscreen.");
   }
   else {
-    Serial.println("Touchscreen started.");
+    if (printTftToSerial)
+      Serial.println("Touchscreen started.");
   }
 
   tft.fillScreen(ILI9341_PURPLE);
@@ -56,7 +58,8 @@ void checkTouch()
     {
       if ((x > REDBUTTON_X) && (x < (REDBUTTON_X + REDBUTTON_W))) {
         if ((y > REDBUTTON_Y) && (y <= (REDBUTTON_Y + REDBUTTON_H))) {
-          Serial.println("Red btn hit");
+          if (printTftToSerial)
+            Serial.println("Red btn hit");
           redBtn();
         }
       }
@@ -65,7 +68,8 @@ void checkTouch()
     {
       if ((x > GREENBUTTON_X) && (x < (GREENBUTTON_X + GREENBUTTON_W))) {
         if ((y > GREENBUTTON_Y) && (y <= (GREENBUTTON_Y + GREENBUTTON_H))) {
-          Serial.println("Green btn hit");
+          if (printTftToSerial)
+            Serial.println("Green btn hit");
           greenBtn();
         }
       }
@@ -108,5 +112,5 @@ void drawTime()
   tft.setCursor(6, 6);
   tft.setTextColor(ILI9341_WHITE, ILI9341_GREEN);
   tft.setTextSize(2);
-  tft.print(getTimeString());
+  tft.print(getTimeString(false));
 }

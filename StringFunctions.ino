@@ -29,7 +29,7 @@ String getFloatString(double number, int digits)
   return toReturn;
 }
 
-String getTimeString()
+String getTimeString(boolean includeMillis)
 {
   String toReturn =
     String(hour()) +
@@ -37,6 +37,10 @@ String getTimeString()
     getDigitsString(minute()) +
     ":" +
     getDigitsString(second());
+
+  if (includeMillis)
+    toReturn += "." + milliseconds();
+
   return toReturn;
 }
 

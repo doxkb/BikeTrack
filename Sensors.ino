@@ -20,11 +20,15 @@ void readSensors()
     roll = filter.getRoll();
     pitch = filter.getPitch();
     heading = filter.getYaw();
-    Serial.print("Orientation: ");
-    Serial.print(heading);
-    Serial.print(" ");
-    Serial.print(pitch);
-    Serial.print(" ");
-    Serial.println(roll);
+
+    if (printSensorsToSerial)
+    {
+      Serial.print("Orientation: ");
+      Serial.print(heading);
+      Serial.print(" ");
+      Serial.print(pitch);
+      Serial.print(" ");
+      Serial.println(roll);
+    }
   }
 }

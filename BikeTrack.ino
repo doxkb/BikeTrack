@@ -15,6 +15,9 @@ enum SpeedType{
 };
 
 //Globals
+#define printSensorsToSerial true
+#define printGpsToSerial true
+#define printTftToSerial true
 SpeedType speedType = kmph;
 float speed;
 short satellites;
@@ -43,7 +46,7 @@ int milliseconds();
 
 //String functions
 String getFloatString(double number, int digits);
-String getTimeString();
+String getTimeString(boolean includeMillis);
 String getDateString();
 String getDigitsString(int digits);
 

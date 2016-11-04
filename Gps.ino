@@ -1,7 +1,9 @@
+
+
 TinyGPS gps;
 //const int offset = -5;  // Eastern Standard Time (USA)
 const int offset = -4;  // Eastern Daylight Time (USA)
-time_t prevDisplay = 0; // when the digital clock was displayed
+time_t prevTimeDisplayUpdate = 0; // when the digital clock was displayed
 int timeChangeMills = 0;
 
 const byte ms100[] = {0xB5 , 0x62 , 0x06 , 0x08 , 0x06 , 0x00 , 0x64 , 0x00 , 0x01 , 0x00 , 0x01 , 0x00 , 0x7A , 0x12};
@@ -14,7 +16,11 @@ int theDelay = 500;
 
 void initGps()
 {
-  Serial.print("Sizeof(gpsobject) = "); Serial.println(sizeof(TinyGPS));
+  if (printGpsToSerial){
+    Serial.print("Sizeof(gpsobject) = ");
+    Serial.println(sizeof(TinyGPS));
+  }
+
   Serial1.begin(115200);
   Serial1.write(ms500, 14);
   Serial1.write(msSet, 8);
@@ -25,14 +31,7 @@ void readGps()
 {
   checkSerialForRateChange();
 
-  if (timeStatus() != timeNotSet) {
-    if (now() != prevDisplay) { //update the display only if the time has changed
-      prevDisplay = now();
-      getTimeString();
-    }
-  }
-
-  bool newdata = false;
+  boolean newdata = false;
   if (Serial1.available()) {
     char c = Serial1.read();
     if (gps.encode(c)) {
@@ -40,15 +39,11 @@ void readGps()
     }
   }
 
-  if (newdata) {
-    Serial.println("-------------");
+  if (newdata)
     gpsdump(gps);
-    Serial.println("-------------");
-    Serial.println();
-  }
 
-  if (now() != prevDisplay) { //update the display only if the time has changed
-    prevDisplay = now();
+  if (now() != prevTimeDisplayUpdate) { //update the display only if the time has changed
+    prevTimeDisplayUpdate = now();
     timeChangeMills = millis();
     drawTime();
   }
@@ -61,11 +56,13 @@ int milliseconds()
 
 void gpsdump(TinyGPS &gps)
 {
+  if (printGpsToSerial)
+    Serial.println("-------------");
+
   unsigned long age;
   gps.f_get_position(&latitude, &longitude, &age);
   altitude = gps.f_altitude();
   readGpsDateTime(gps);
-
   switch (speedType){
     case mph:
       speed = gps.f_speed_mph();
@@ -83,10 +80,15 @@ void gpsdump(TinyGPS &gps)
 
   satellites = gps.satellites();
 
-  Serial.print("Lat/Long(float): "); Serial.print(getFloatString(latitude, 5)); Serial.print(", "); Serial.println(getFloatString(longitude, 5));
-  Serial.print("Alt(m): "); Serial.print(getFloatString(altitude, 2));  Serial.println();
-  Serial.print("Speed(" + speedUnits + "): "); Serial.print(getFloatString(speed, 2)); Serial.println();
-  Serial.print("Satellites: "); Serial.println(satellites);
+  if (printGpsToSerial)
+  {
+    Serial.print("Lat/Long(float): "); Serial.print(getFloatString(latitude, 5)); Serial.print(", "); Serial.println(getFloatString(longitude, 5));
+    Serial.print("Alt(m): "); Serial.print(getFloatString(altitude, 2));  Serial.println();
+    Serial.print("Speed(" + speedUnits + "): "); Serial.print(getFloatString(speed, 2)); Serial.println();
+    Serial.print("Satellites: "); Serial.println(satellites);
+    Serial.println("-------------");
+    Serial.println();
+  }
 }
 
 void readGpsDateTime(TinyGPS &gps)
@@ -96,8 +98,6 @@ void readGpsDateTime(TinyGPS &gps)
   int year;
 
   gps.get_datetime(&date, &time, &age);
-  Serial.print("GPS Date(ddmmyy): "); Serial.print(date); Serial.print(" Time(hhmmsscc): ");
-  Serial.println(time);
 
   gps.crack_datetime(&year, &month, &day, &hour, &minute, &second, &hundredths, &age);
   if (age < 1000) {
@@ -105,8 +105,13 @@ void readGpsDateTime(TinyGPS &gps)
     adjustTime(offset * SECS_PER_HOUR);
   }
 
-  Serial.print("TEENSY Date: "); Serial.println(getDateString());
-  Serial.print("  Time: "); Serial.print(getTimeString());Serial.print("."); Serial.println(milliseconds());
+  if (printGpsToSerial)
+  {
+    Serial.print("GPS Date(ddmmyy): "); Serial.print(date); Serial.print(" Time(hhmmsscc): ");
+    Serial.println(time);
+    Serial.print("TEENSY Date: "); Serial.println(getDateString());
+    Serial.print("  Time: "); Serial.println(getTimeString(true));
+  }
 }
 
 void checkSerialForRateChange()
