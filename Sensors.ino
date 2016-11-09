@@ -186,12 +186,9 @@ float gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values
 float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion
 float eInt[3] = {0.0f, 0.0f, 0.0f};       // vector to hold integral error for Mahony method
 
-
 void initSensors()
 {
   Wire1.begin();
-  Serial.begin(115200);
-  delay(1000);
 
   MPU9250SelfTest(SelfTest);
   //calibrateMPU9250(gyroBias, accelBias);
@@ -264,7 +261,7 @@ void readSensors()
     Serial.print("Atm pressure:    "); Serial.print(atmosphericPressure); Serial.println(" hPa");
     Serial.print("ax = "); Serial.print(ax, 2);
     Serial.print(" ay = "); Serial.print(ay, 2);
-    Serial.print(" az = "); Serial.print(az, 2); Serial.println(" g");
+    Serial.print(" az = "); Serial.print(-az, 2); Serial.println(" g");
     Serial.print("Yaw, Pitch, Roll: ");
     Serial.print(yaw, 2);
     Serial.print(", ");
@@ -897,40 +894,3 @@ void MahonyQuaternionUpdate(float ax, float ay, float az, float gx, float gy, fl
   q[3] = q4 * norm;
 
 }
-
-
-//#include <NXPMotionSense.h>
-// NXPMotionSense imu;
-// NXPSensorFusion filter;
-//
-// void initSensors()
-// {
-//   imu.begin();
-//   filter.begin(100);
-// }
-//
-// void readSensors()
-// {
-//   float ax, ay, az;
-//   float gx, gy, gz;
-//   float mx, my, mz;
-//
-//   if (imu.available()) {
-//     imu.readMotionSensor(ax, ay, az, gx, gy, gz, mx, my, mz);
-//     filter.update(gx, gy, gz, ax, ay, az, mx, my, mz);
-//
-//     roll = filter.getRoll();
-//     pitch = filter.getPitch();
-//     heading = filter.getYaw();
-//
-//     if (printSensorsToSerial)
-//     {
-//       Serial.print("Orientation: ");
-//       Serial.print(heading);
-//       Serial.print(" ");
-//       Serial.print(pitch);
-//       Serial.print(" ");
-//       Serial.println(roll);
-//     }
-//   }
-// }

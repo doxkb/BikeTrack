@@ -43,8 +43,7 @@ void initTft()
     Serial.println("Unable to start touchscreen.");
 
   tft.fillScreen(BACKGROUND_COLOR);
-  // origin = left,top landscape (USB left upper)
-  tft.setRotation(1);
+  tft.setRotation(1);  // origin = left,top landscape (USB left upper)
 
   redBtn();
 }
