@@ -28,6 +28,7 @@ float speed;
 short satellites;
 String speedUnits = "km/h";
 float longitude, latitude, altitude, gpsAltitude;
+float ax, ay, az;
 float temperature, atmosphericPressure;
 float roll, pitch, yaw;
 int sensorUpdateRate = 100;

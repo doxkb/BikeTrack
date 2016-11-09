@@ -182,7 +182,7 @@ float sensors_deltat = 0.0f;  // integration interval for both filter schemes
 uint32_t lastUpdate = 0;// used to calculate integration interval
 uint32_t Now = 0;        // used to calculate integration interval
 
-float ax, ay, az, gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values
+float gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values
 float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion
 float eInt[3] = {0.0f, 0.0f, 0.0f};       // vector to hold integral error for Mahony method
 
@@ -259,10 +259,9 @@ void readSensors()
 
   if (printSensorsToSerial) {
     Serial.println(temperature);
-    Serial.print("Pressure:    ");
-    Serial.println(atmosphericPressure);
-    Serial.print("Altitude:    ");
-    Serial.println(altitude);
+    Serial.print("Altitude:    "); Serial.print(altitude); Serial.println(" m");
+    Serial.print("Temperature: "); Serial.print(temperature, 2); Serial.println(" C");
+    Serial.print("Atm pressure:    "); Serial.print(atmosphericPressure); Serial.println(" hPa");
     Serial.print("ax = "); Serial.print(ax, 2);
     Serial.print(" ay = "); Serial.print(ay, 2);
     Serial.print(" az = "); Serial.print(az, 2); Serial.println(" g");

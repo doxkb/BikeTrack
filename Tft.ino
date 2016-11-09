@@ -150,10 +150,11 @@ void drawSensors()
   tft.setCursor(0, 50);
   tft.setTextColor(TEXT_COLOR, TEXT_BACKGROUND_COLOR);
   tft.setTextSize(1);
+  tft.println("ax: " + getFloatString(ax, 2) + " ay: " + getFloatString(ay, 2) + " az: " + getFloatString(az, 2) + " g");
   tft.println("Roll: " + getFloatString(roll, 2) + " Pitch: " + getFloatString(pitch, 2) + " Yaw: " + getFloatString(yaw, 2));
-  tft.println("Alt: " + getFloatString(altitude, 2));
-  tft.println("Temperature: " + getFloatString(temperature, 2));
-  tft.println("Atm pressure: " + getFloatString(atmosphericPressure, 2));
+  tft.println("Altitude: " + getFloatString(altitude, 2) + " m");
+  tft.println("Temperature: " + getFloatString(temperature, 2) + " C");
+  tft.println("Atm pressure: " + getFloatString(atmosphericPressure, 2) + " hPa");
 }
 
 void drawGps()
@@ -164,7 +165,13 @@ void drawGps()
   tft.setTextSize(1);
   tft.println("Lat: " + getFloatString(latitude, 5));
   tft.println("Lon: " + getFloatString(longitude, 5));
-  tft.println("Sat: " + String(satellites));
+
+  if (satellites >= 100)
+    tft.println("Sat: 00");
+  else if (satellites >= 10)
+    tft.println("Sat: " + String(satellites));
+  else
+    tft.println("Sat: 0" + String(satellites));
 
   tft.setCursor(6, 150);
   tft.setTextColor(TEXT_COLOR, TEXT_BACKGROUND_COLOR);
