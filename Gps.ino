@@ -59,7 +59,7 @@ void gpsdump(TinyGPS &gps)
 
   unsigned long age;
   gps.f_get_position(&latitude, &longitude, &age);
-  altitude = gps.f_altitude();
+  gpsAltitude = gps.f_altitude();
   readGpsDateTime(gps);
   switch (speedType){
     case mph:
@@ -81,7 +81,7 @@ void gpsdump(TinyGPS &gps)
   if (printGpsToSerial)
   {
     Serial.print("Lat/Long(float): "); Serial.print(getFloatString(latitude, 5)); Serial.print(", "); Serial.println(getFloatString(longitude, 5));
-    Serial.print("Alt(m): "); Serial.print(getFloatString(altitude, 2));  Serial.println();
+    Serial.print("Alt(m): "); Serial.print(getFloatString(gpsAltitude, 2));  Serial.println();
     Serial.print("Speed(" + speedUnits + "): "); Serial.print(getFloatString(speed, 2)); Serial.println();
     Serial.print("Satellites: "); Serial.println(satellites);
     Serial.println("-------------");

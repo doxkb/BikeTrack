@@ -147,20 +147,27 @@ void drawTime()
 void drawSensors()
 {
   //tft.fillRect(3, 3, 100, 21, ILI9341_GREEN);
-  tft.setCursor(6, 50);
+  tft.setCursor(0, 50);
   tft.setTextColor(TEXT_COLOR, TEXT_BACKGROUND_COLOR);
   tft.setTextSize(1);
-  tft.print("Roll: " + getFloatString(roll, 2) + " Pitch: " + getFloatString(pitch, 2) + " Yaw: " + getFloatString(heading, 2));
+  tft.println("Roll: " + getFloatString(roll, 2) + " Pitch: " + getFloatString(pitch, 2) + " Yaw: " + getFloatString(yaw, 2));
+  tft.println("Alt: " + getFloatString(altitude, 2));
+  tft.println("Temperature: " + getFloatString(temperature, 2));
+  tft.println("Atm pressure: " + getFloatString(atmosphericPressure, 2));
 }
 
 void drawGps()
 {
   //tft.fillRect(3, 3, 100, 21, ILI9341_GREEN);
-  tft.setCursor(6, 100);
+  tft.setCursor(0, 100);
   tft.setTextColor(TEXT_COLOR, TEXT_BACKGROUND_COLOR);
   tft.setTextSize(1);
   tft.println("Lat: " + getFloatString(latitude, 5));
   tft.println("Lon: " + getFloatString(longitude, 5));
-  tft.println("Alt: " + getFloatString(altitude, 2));
   tft.println("Sat: " + String(satellites));
+
+  tft.setCursor(6, 150);
+  tft.setTextColor(TEXT_COLOR, TEXT_BACKGROUND_COLOR);
+  tft.setTextSize(3);
+  tft.println(String(speed) + speedUnits);
 }

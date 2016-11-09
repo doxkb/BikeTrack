@@ -3,9 +3,9 @@
 #include <XPT2046_Touchscreen.h>
 #include <TinyGPS.h>
 #include <TimeLib.h>
-#include <NXPMotionSense.h>
-#include <Wire.h>
 #include <EEPROM.h>
+#include <i2c_t3.h>
+#include <BaroSensor.h>
 
 //Enums
 enum SpeedType{
@@ -27,8 +27,9 @@ Screens currentScreen = home;
 float speed;
 short satellites;
 String speedUnits = "km/h";
-float longitude, latitude, altitude;
-float roll, pitch, heading;
+float longitude, latitude, altitude, gpsAltitude;
+float temperature, atmosphericPressure;
+float roll, pitch, yaw;
 int sensorUpdateRate = 100;
 int gpsUpdateRate = 1000;
 
