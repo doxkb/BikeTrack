@@ -46,6 +46,11 @@ void readGps()
   {
     gpsdump(gps);
   }
+  else
+  {
+    satellites = 0;
+    speed = 0;
+  }
 
   if (now() != prevTimeMillsUpdate) {
     prevTimeMillsUpdate = now();

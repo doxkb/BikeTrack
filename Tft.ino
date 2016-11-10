@@ -140,6 +140,7 @@ int lastPitchX = -100;
 int lastPitchY = -100;
 int lastRollX = -100;
 int lastRollY = -100;
+float minRoll, maxRoll, minPitch, maxPitch;
 
 void resetDisplay(){
   int cSize = forcesSize/2;
@@ -164,6 +165,10 @@ void resetDisplay(){
   maxLeft = 0;
   maxRight = 0;
   maxSpeed = 0;
+  minRoll = 0;
+  maxRoll = 0;
+  minPitch = 0;
+  maxPitch = 0;
 }
 
 time_t prevTimeDisplayUpdate = 0;
@@ -173,11 +178,11 @@ void updateDisplay()
   if (now() != prevTimeDisplayUpdate) { //update the display only if the time has changed
     prevTimeDisplayUpdate = now();
     drawTime();
+    drawSatellites();
   }
 
   if (currentScreen == home)
   {
-      drawGps();
       drawSpeed();
       drawLean();
       drawGForces();
@@ -255,21 +260,15 @@ void drawTime()
   tft.print(getTimeString(false));
 }
 
-int lastSat = -1;
-void drawGps()
+void drawSatellites()
 {
-  if (satellites != lastSat)
-  {
-    tft.fillRect(0, TFT_HEIGHT - 50, 60, 10, BACKGROUND_COLOR);
-    tft.setCursor(0, TFT_HEIGHT - 50 - 2);
-    tft.setTextColor(TEXT_COLOR);
-    tft.setFont(LiberationSans_10_Bold_Italic);
-    if (satellites >= 100)
-      tft.println("Sat: 0");
-    else
-      tft.println("Sat: " + String(satellites));
-    lastSat = satellites;
-  }
+  tft.setCursor(TFT_WIDTH - 43, 10);
+  tft.setTextColor(ILI9341_BLACK);
+  tft.setFont(LiberationSans_10_Bold_Italic);
+  if (satellites >= 100)
+    tft.println("Sat: 0");
+  else
+    tft.println("Sat: " + String(satellites));
 }
 
 
@@ -289,6 +288,45 @@ void drawLean(){
     tft.fillRect(posX2, posY2 - cSize, cSize, cSize*2 + 2, BACKGROUND_COLOR);
     tft.drawLine(posX2, posY2 - cSize, posX2, posY2 + cSize, ILI9341_WHITE);
     bgDrawn = true;
+  }
+
+  bool maxChanges = false;
+
+  if (roll < 0 && minRoll > roll)
+  {
+    minRoll = roll;
+    maxChanges = true;
+  }
+  if (roll > 0 && maxRoll < roll)
+  {
+    maxRoll = roll;
+    maxChanges = true;
+  }
+  if (pitch < 0 && minPitch > pitch)
+  {
+    minPitch = pitch;
+    maxChanges = true;
+  }
+  if (pitch > 0 && maxPitch < pitch)
+  {
+    maxPitch = pitch;
+    maxChanges = true;
+  }
+
+  if (maxChanges){
+    tft.setFont(LiberationSans_8);
+    tft.setCursor(posX - 40, posY-10);
+    tft.fillRect(posX-40, posY -10, 80, 9, BACKGROUND_COLOR);
+    tft.println("("+getFloatString(-minPitch, 1)+")");
+    tft.setCursor(posX + 13, posY-10);
+    tft.println("("+getFloatString(maxPitch, 1)+")");
+
+    tft.fillRect(posX2-29, posY2 -32, 29, 9, BACKGROUND_COLOR);
+    tft.setCursor(posX2-29, posY2 -32);
+    tft.println("("+getFloatString(maxRoll, 1)+")");
+    tft.fillRect(posX2-29, posY2 +24, 29, 9, BACKGROUND_COLOR);
+    tft.setCursor(posX2-29, posY2 +24);
+    tft.println("("+getFloatString(-minRoll, 1)+")");
   }
 
   float s = sin(pitch * 0.0174533);
@@ -419,7 +457,8 @@ void drawGForces(){
   if (right > maxRight)
     maxRight = right;
 
-  tft.fillRoundRect(posX,posY, rSize, rSize, 20, ILI9341_BLUE);
+  tft.fillRoundRect(posX,posY, rSize, rSize, 20, BACKGROUND_COLOR);
+  tft.drawRoundRect(posX,posY, rSize, rSize, 20, ILI9341_WHITE);
   tft.setTextColor(TEXT_COLOR);
   tft.setFont(LiberationSans_14_Bold_Italic);
   int fontSize = 14;
@@ -432,6 +471,16 @@ void drawGForces(){
   tft.println(getFloatString(left, 1));
   tft.setCursor(posX + rSize - 31, posY + rSize/2 - 8);
   tft.println(getFloatString(right, 1));
+
+  tft.setFont(LiberationSans_8);
+  tft.setCursor(posX +2, posY + rSize/2 -8+16);
+  tft.println("("+getFloatString(maxLeft, 1)+")");
+  tft.setCursor(posX + rSize - 31, posY + rSize/2 - 8+16);
+  tft.println("("+getFloatString(maxRight, 1)+")");
+  tft.setCursor(posX + rSize/2 - fontSize - 1, posY+2 + 16);
+  tft.println("("+getFloatString(maxFront, 1)+")");
+  tft.setCursor(posX + rSize/2 - fontSize - 1, posY + rSize - fontSize - 2-10);
+  tft.println("("+getFloatString(maxBack, 1)+")");
 }
 
 float lastSpeed = -1000;
