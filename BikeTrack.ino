@@ -6,6 +6,10 @@
 #include <EEPROM.h>
 #include <i2c_t3.h>
 #include <BaroSensor.h>
+#include <font_LiberationSansBold.h>
+#include <font_LiberationSansBoldItalic.h>
+#include <font_LiberationSans.h>
+#include <font_LiberationSansItalic.h>
 
 //Enums
 enum SpeedType{
@@ -31,8 +35,7 @@ float longitude, latitude, altitude, gpsAltitude;
 float ax, ay, az;
 float temperature, atmosphericPressure;
 float roll, pitch, yaw;
-int sensorUpdateRate = 100;
-int gpsUpdateRate = 1000;
+int gpsUpdateRate = 100;
 
 //Main functions
 void setup(void);
@@ -72,15 +75,28 @@ void setup(void)
   Serial.begin(115200);
   delay(1000);
 
-  initSensors();
   initGps();
+  initSensors();
   initTft();
 }
 
 void loop()
 {
-  readSensors();
+  int strt, end;
+  strt = millis();
   readGps();
+  end = millis();
+  Serial.print((end-strt)); Serial.println(" ms for readGps");
+  strt = millis();
+  readSensors();
+  end = millis();
+  Serial.print((end-strt)); Serial.println(" ms for readSensors");
+  strt = millis();
   checkTouch();
+  end = millis();
+  Serial.print((end-strt)); Serial.println(" ms for checkTouch");
+  strt = millis();
   updateDisplay();
+  end = millis();
+  Serial.print((end-strt)); Serial.println(" ms for updateDisplay");
 }

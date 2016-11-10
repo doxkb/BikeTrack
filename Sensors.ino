@@ -159,7 +159,7 @@ enum Mscale {
 
 // Specify sensor full scale
 uint8_t Gscale = GFS_250DPS;
-uint8_t Ascale = AFS_16G;
+uint8_t Ascale = AFS_8G;
 uint8_t Mscale = MFS_16BITS; // Choose either 14-bit or 16-bit magnetometer resolution
 uint8_t Mmode = 0x06;        // 2 for 8 Hz, 6 for 100 Hz continuous magnetometer data read
 float aRes, gRes, mRes;      // scale resolutions per LSB for the sensors
@@ -196,6 +196,10 @@ void initSensors()
   initAK8963(magCalibration);
 
   BaroSensor.begin();
+
+  for (int i = 0; i < 50; i ++){
+    readSensors();
+  }
 }
 
 void readSensors()
@@ -234,9 +238,8 @@ void readSensors()
 
   // Serial print and/or display at 0.5 s rate independent of data rates
   if (BaroSensor.isOK()) {
-    Serial.print("Temperature: ");
-    temperature = BaroSensor.getTemperature();
-    atmosphericPressure = BaroSensor.getPressure();
+    temperature = BaroSensor.getTemperature(CELSIUS,OSR_1024);
+    atmosphericPressure = BaroSensor.getPressure(OSR_1024);
     altitude = ((pow((1013.25/atmosphericPressure), 1/5.257) -1) * (temperature + 273.15))/0.0065; //1013.25 = barometric pressure at sea level on 2016-11-09
   }
 
@@ -245,7 +248,7 @@ void readSensors()
   roll  = atan2(2.0f * (q[0] * q[1] + q[2] * q[3]), q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3]);
   pitch *= 180.0f / PI;
   yaw   *= 180.0f / PI;
-  //yaw   -= 14.35; // Declination at Mirabel, California is -14 degrees 21 minutes on 2016-11-09
+  //yaw   -= 14.35; // Declination at Mirabel, Quebec is -14 degrees 21 minutes on 2016-11-09
   roll  *= 180.0f / PI;
 
   if (roll < 0)
@@ -255,7 +258,6 @@ void readSensors()
 
 
   if (printSensorsToSerial) {
-    Serial.println(temperature);
     Serial.print("Altitude:    "); Serial.print(altitude); Serial.println(" m");
     Serial.print("Temperature: "); Serial.print(temperature, 2); Serial.println(" C");
     Serial.print("Atm pressure:    "); Serial.print(atmosphericPressure); Serial.println(" hPa");
@@ -270,10 +272,6 @@ void readSensors()
     Serial.println(roll, 2);
   }
 }
-
-//===================================================================================================================
-//====== Set of useful function to access acceleration. gyroscope, magnetometer, and temperature data
-//===================================================================================================================
 
 void getMagnetometerResolution() {
   switch (Mscale)

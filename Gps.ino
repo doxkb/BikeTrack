@@ -1,8 +1,8 @@
 
 
 TinyGPS gps;
-//const int offset = -5;  // Eastern Standard Time (USA)
-const int offset = -4;  // Eastern Daylight Time (USA)
+const int offset = -5;  // Eastern Standard Time (USA)
+// const int offset = -4;  // Eastern Daylight Time (USA)
 time_t prevTimeMillsUpdate = 0; // when the digital clock was displayed
 int timeChangeMills = 0;
 
@@ -21,7 +21,7 @@ void initGps()
   }
 
   Serial1.begin(115200);
-  Serial1.write(ms1000, 14);
+  Serial1.write(ms100, 14);
   Serial1.write(msSet, 8);
   timeChangeMills = millis();
 }
@@ -31,15 +31,21 @@ void readGps()
   checkSerialForRateChange();
 
   boolean newdata = false;
-  if (Serial1.available()) {
-    char c = Serial1.read();
-    if (gps.encode(c)) {
-      newdata = true;
+  unsigned long start = millis();
+
+  while (millis() - start < gpsUpdateRate) {
+    if (Serial1.available()) {
+      char c = Serial1.read();
+      if (gps.encode(c)) {
+        newdata = true;
+      }
     }
   }
 
   if (newdata)
+  {
     gpsdump(gps);
+  }
 
   if (now() != prevTimeMillsUpdate) {
     prevTimeMillsUpdate = now();

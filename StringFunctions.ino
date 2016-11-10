@@ -39,7 +39,7 @@ String getTimeString(boolean includeMillis)
     getDigitsString(second());
 
   if (includeMillis)
-    toReturn += "." + milliseconds();
+    toReturn += "." + String(milliseconds());
 
   return toReturn;
 }
